@@ -1,14 +1,17 @@
 ---
 title: "Web Page"
 author: "Gretchen Saveson"
-date: "1/22/2020"
-output: html_document
+date: "January 22, 2020"
+output: 
+  prettydoc::html_pretty:
+    theme: Caymen
+    highlight: github
 ---
 
 
 
 ![Alt text](https://GretchenSav.github.io/SavesonBio381/pic.jpg)
 
-## Homework 1
+## Homework Links 
 [homework 1](Homework 1.html)
 
