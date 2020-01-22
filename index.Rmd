@@ -5,5 +5,8 @@ date: "1/22/2020"
 output: html_document
 ---
 
+![Alt text](https://GretchenSav.github.io/SavesonBio381/pic.jpg)
+
 ## Homework 1
 [homework 1](Homework 1.html)
+
