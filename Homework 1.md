@@ -50,7 +50,7 @@ A reference link to google can be made with brackets: [google][http://google.com
 
 The Simplified Blueberry Project 
 
-![20200115_143233](C:\Users\gretc\Downloads\20200115_143233.jpg)
+![20200115_143233](https://GretchenSav.github.io/SavesonBio381/pic.jpg)
 
 
 
