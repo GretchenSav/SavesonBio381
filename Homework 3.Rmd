@@ -1,0 +1,79 @@
+---
+title: "Homework 3"
+author: "Gretchen Saveson"
+date: "1/29/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### Question 1
+
+Spaces are replaced by commas. Spaces are selected using "\h".
+``` 
+Find: (\w+)\s\h+d
+
+Replace: \1,
+```
+
+
+#### Question 2
+
+Individual words are captured and rearranged. To lump multiple words of universty names   together into one capturable unit, a period asterisk was used at the end of the line.
+```
+Find: (\w+),\h(\w+),\h(.*)
+
+Replace: \2 \1 \\(\3\\)
+```
+
+
+#### Question 3
+
+To add a line break after each ".mp3", the .mp3 was captured, and the space folling the   mp3 was replaced with \r.
+```
+Find: (.mp3)(\s)
+
+Replace: \1\r
+```
+
+
+#### Question 4
+
+The four diget number was captured as a series of \d\d\d\d. This could also be done using   \d{4}. The ".*" grabs everything between the regions of interest.
+```
+Find: (\d\d\d\d)\h(.*)(\.mp3)
+
+Replace: \2_\1\3
+```
+
+
+#### Question 5
+
+The first letter of the first word is isolated as a single character \w, and all   characters in the species name are grabbed. The last number is captured as \d+.  
+```
+Find: (\w)\w+,(\w+,).*,(\d+)
+
+Replace: \1_\2\3
+```
+
+
+#### Question 6
+
+The first letter of the first word is isolated as \w. The first four letters of the second word are isolated as a series of four characters \w\w\w\w. This could also be done using brackerts: \w{4}.
+```
+Find: (\w)\w+,(\w\w\w\w).*,(\d+)
+
+Replace: \1_\2,\3
+```
+
+
+#### Question 7
+
+Here, both numbers are captured. To capture the decimal in the first number, a ".*" was used.
+```
+Find: (\w{3})\w*,(\w{3})\w*,(.*),(\d+)
+
+Replace: \1\2, \4, \3
+```
