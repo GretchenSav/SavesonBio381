@@ -7,14 +7,14 @@ output:
     theme: Caymen
     highlight: github
 ---
-
-
-![Alt text](https://GretchenSav.github.io/SavesonBio381/pic.jpg)
+<img src="profile.jpg" width="400" height="400"/>
+<img src="pic.jpg" width="700" height="400"/>
 
 ## Homework Links 
 [Homework 1](Homework 1.html)
 
 [Homework 3](Homework-3.html)
+
 
 
 

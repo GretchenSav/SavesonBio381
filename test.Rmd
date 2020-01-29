@@ -1,0 +1,9 @@
+---
+title: "profile"
+author: "Gretchen Saveson"
+date: "1/29/2020"
+output: html_document
+---
+![](profile.jpg)
+<img src="profile.jpg" width="400" height="400"/>
+
