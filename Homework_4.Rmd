@@ -1,0 +1,123 @@
+---
+title: "Homework_4"
+author: "Gretchen Saveson"
+date: "2/5/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Question 1
+
+```{r}
+#assigning values to variables
+x <- 1.1
+a <- 2.2
+b <- 3.3
+```
+a. $x^{a^b}$ 
+```{r}
+#assigning value to variable z and printing
+z <- x^{a^b}
+print(z)
+```
+b. $({x^a})^b$
+```{r}
+#assigning a new value to variable z
+z <- {x^a}^b
+print(z)
+```
+c. $3x^2+2x^2+1$
+```{r}
+#assigning a new value to variable z
+z <- 3*x^2+2*x^2+1
+print(z)
+```
+***
+### Question 2
+
+a.
+```{r}
+# a vector composed of two sequences, one from 1 to 8, and another from 7 to 1.
+a <- c(seq(1,8),seq(7,1))
+print(a)
+```
+
+b.
+```{r}
+# a vector from 1 to 5. The first number is repeated once, the second twice, and so on. 
+b <- rep(1:5,c(1,2,3,4,5))
+print(b)
+```
+c.
+```{r}
+# a vector from 5 to 1. The first number is repeated once, the second twice, and so on. 
+c <- rep(5:1,c(1,2,3,4,5))
+print(c)
+```
+***
+### Question 3
+
+```{r}
+#create random coordinates on normal x-y grid.
+x <- runif(1,1,100)
+y <- runif(1,1,100)
+v <- c(x,y)
+print(v)
+
+#take these coordinates and plug them into equations for polar coordinates.
+polar_coordinates <- c((sqrt(x^2+y^2)),(atan(y/x)))
+print(polar_coordinates)
+
+```
+
+***
+### Question 4
+
+```{r}
+# first, a vector is made containing the line of animals
+queue <- c("sheep","fox","owl","ant")
+
+# added the serpent to the line by making a vector containing the queue and the serpent.
+a <- c(queue, "serpent")
+print(a)
+
+# square brackets are used to select the second through fifth elements in the a vector from the previous question. 
+b <- c(a[2:5])
+print (b)
+
+#to add the donkey to the front of the line, a vector is made by a donkey followed by vector b from the previous question, as vector b remains unchanged. 
+c <- c("donkey",b)
+print(c)
+
+# the serpent leaves the end of the line, so only the first four animals from the previous vector are selected. 
+d <- c[1:4]
+print(d)
+
+# to take the owl out from the center of the line, square brackets and a minus sign are used to access all but the third element of vector d.
+e <- d[-3]
+print(e)
+
+# to add the aphid before the ant, the owl (in the third position) from vector d can be replaced with an aphid. 
+d[3] <- "aphid";d
+print(d)
+
+# the match function can be used to find the position of the aphid in the vector d. The aphid is third in line.
+match(c("aphid"),d)
+
+```
+
+***
+### Question 5
+
+```{r}
+# a sequence from 1 to 100 is created using seq().
+s <- seq(1,100)
+
+# values are taken out of this sequence using square brackets. %% find the residual, so integers that 2 and 3 and 7 go into evenly (have a residual of 0) are left out. excaimation points before an equal sign mean "not equal."
+t <- s[s%%2!=0&s%%7!=0&s%%3!=0]
+print(t)
+
+```
