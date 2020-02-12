@@ -1,0 +1,136 @@
+---
+title: "Homework_5"
+author: "Gretchen Saveson"
+date: "2/12/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+```{r}
+#ceiling() rounds up to create an integer
+n_dims <- ceiling(runif(1, min = 2.001, max = 10))
+n_dims
+
+#creating a vector using a sequence (automaticcaly "by 1" from 1 to n_dims^2.
+v <- seq(1,(n_dims^2))
+print(v)
+
+# shuffle() reorders the numbers in the vector
+shuffle <- sample(v)
+print(shuffle)
+
+# a matrix is created using the shuffled data and the number of rows (and by default number of columns) is equal to the n_dims. 
+m <- matrix(data=shuffle,nrow=n_dims)
+print(m)
+
+# to transpose the matrix, t() is used. rows and colums are swapped in the result. 
+m2 <- t(m)
+print(m2)
+
+# sums all numbers in last and first row. (no column specified)
+lastand1strowsum <- sum((m2[n_dims,]),(m2[1,]))
+lastand1strowsum
+# divides the sum by 2 times the n_dims
+lastrowmean <- (lastand1strowsum/(2*n_dims))
+lastrowmean
+
+# the eigen() function. Eigenvalues and eigenvectors are returned if only.values = FALSE, only eigeneigenvalues returned if TRUE. 
+e <- eigen(m2)
+print(e)
+vectors <- eigen(m2, only.values = FALSE)
+values <- eigen(m2, only.values = TRUE)
+# both vectors and values appear to be complex types
+typeof(e$vectors)
+typeof(e$values)
+# But this way, they appear to be lists
+typeof(vectors)
+typeof(values)
+
+```
+
+## Question 2
+
+```{r}
+# list elements:
+#1
+my_matrix <- matrix(data=sample(10,16,replace=TRUE),nrow=4)
+print(my_matrix)
+#2
+my_logical1 <- runif(100,min=0,max=100)
+my_logical <- my_logical1 < 5
+print(my_logical)
+#3
+my_letters <- sample(letters)
+print(my_letters)
+
+#list
+my_list <- list(my_matrix,
+                my_logical,
+                my_letters)
+print(my_list)
+
+# a new list is created containing the element [2,2] from my_matrix, the second element of the logical vector, and the second element of the letters vector. 
+new_list <- list(my_matrix[2,2], my_logical[2],my_letters[2])
+print(new_list)
+#the first element of new_list is an integer. double brackets extract from original source, otherwise "list" is returned with single brackets.
+typeof(new_list[[1]])
+#the seconf element is logical
+typeof(new_list[[2]])
+#the third element is a character
+typeof(new_list[[3]])
+
+# list elements are combined into a vector
+atomicvector <- c(new_list[[1]],new_list[[2]],new_list[[3]])
+atomicvector <- c(my_matrix[2,2],my_logical[2],my_letters[2])
+print(atomicvector)
+
+#this vector is classified as "character"
+typeof(atomicvector)
+
+
+```
+## Question 3
+
+```{r}
+# make an empty vector with 26 cells to be used for a column in the data frame.
+column <- rep(NA,26)
+frame <- data.frame(column,column)
+print(frame)
+
+# oh. here are the two columns to be used in the data frame
+#1
+my_unis <- runif(26, min=0,max=10)
+head(my_unis)
+#2
+my_letters <- sample(LETTERS)
+head(my_letters)
+
+#add these vectors as columns in a data frame
+my_frame <- data.frame(my_unis,my_letters)
+head(my_frame)
+
+# select 4 random rows and replace numberic value with "NA"
+my_frame[sample(x=seq_len(26),size=4),1] <- NA
+print(my_frame)
+
+# identify which rows have the missing values
+which(!complete.cases(my_frame$my_unis))
+
+# use the order() function to arrange the letters alphabetically
+ordered <- my_frame[order(my_frame$my_letters),]
+print(ordered)
+
+#calculate the first column's mean.
+mean(my_frame$my_unis, na.rm = T)
+
+
+
+```
+
+
+
+
