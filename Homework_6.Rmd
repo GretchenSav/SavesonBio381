@@ -1,0 +1,238 @@
+---
+title: "Homework_6"
+author: "Gretchen Saveson"
+date: "2/19/2020"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+```{r}
+library(ggplot2) # for graphics
+library(MASS) # for maximum likelihood estimation
+
+
+# quick and dirty, a truncated normal distribution to work on the solution set
+
+z <- rnorm(n=3000,mean=0.2)
+z <- data.frame(1:3000,z)
+names(z) <- list("ID","myVar")
+z <- z[z$myVar>0,]
+str(z)
+summary(z$myVar)
+
+# plot histogram of data
+# y axis is rescaled so that the area under the curve equals one. 
+p1 <- ggplot(data=z, aes(x=myVar, y=..density..)) +
+  geom_histogram(color="grey60",fill="cornsilk",size=0.2) 
+print(p1)
+
+# add empirical density curve
+# this adds a curve that id fitted to the data to smooth the shape of the histogram. It does not assume any distribution. 
+p1 <-  p1 +  geom_density(linetype="dotted",size=0.75)
+print(p1)
+
+# get maximum likelihood parameters for normal
+
+normPars <- fitdistr(z$myVar,"normal")
+print(normPars) # rpints mean and standard deviation
+str(normPars)
+normPars$estimate["mean"] # note structure of getting a named attribute
+
+# plot normal probability density
+# first, assign mean and sd to variables
+meanML <- normPars$estimate["mean"]
+sdML <- normPars$estimate["sd"]
+
+# x values are specified from 0 to the length of variable of interest.
+xval <- seq(0,max(z$myVar),len=length(z$myVar))
+
+# dnorm() is called inside ggplot's "stat_function" to generate the probability density for the normal distribution. 
+ stat <- stat_function(aes(x = xval, y = ..y..), fun = dnorm, colour="red", n = length(z$myVar), args = list(mean = meanML, sd = sdML))
+ p1 + stat
+# The red curve shows the best-fitting normal dist. It has a biased mean because these data have no negative values. The mean of the fitted model is much higher (~0.9) than the mean of the original data (0.2). The normal dist doesn't work well in this instance. 
+ 
+ 
+# plot exponential probability density
+# fitdistr() is used to fit exponential curve to data 
+expoPars <- fitdistr(z$myVar,"exponential")
+rateML <- expoPars$estimate["rate"]
+
+stat2 <- stat_function(aes(x = xval, y = ..y..), fun = dexp, colour="blue", n = length(z$myVar), args = list(rate=rateML))
+ p1 + stat + stat2
+
+# plot uniform probability density
+# fitdistr() is not needed. Only two parameters are min and max of data. 
+ stat3 <- stat_function(aes(x = xval, y = ..y..), fun = dunif, colour="darkgreen", n = length(z$myVar), args = list(min=min(z$myVar), max=max(z$myVar)))
+ p1 + stat + stat2 + stat3
+
+# plot gamma probability density
+# fitdistr() is used again here. 
+ gammaPars <- fitdistr(z$myVar,"gamma")
+shapeML <- gammaPars$estimate["shape"]
+rateML <- gammaPars$estimate["rate"]
+
+stat4 <- stat_function(aes(x = xval, y = ..y..), fun = dgamma, colour="brown", n = length(z$myVar), args = list(shape=shapeML, rate=rateML))
+ p1 + stat + stat2 + stat3 + stat4
+ 
+# plot beta probability density
+#it is plotted in its own plot because data must be rescaled to be between 1 and 0.
+ pSpecial <- ggplot(data=z, aes(x=myVar/(max(myVar + 0.1)), y=..density..)) +
+  geom_histogram(color="grey60",fill="cornsilk",size=0.2) + 
+  xlim(c(0,1)) +
+  geom_density(size=0.75,linetype="dotted")
+
+betaPars <- fitdistr(x=z$myVar/max(z$myVar + 0.1),start=list(shape1=1,shape2=2),"beta")
+shape1ML <- betaPars$estimate["shape1"]
+shape2ML <- betaPars$estimate["shape2"]
+
+statSpecial <- stat_function(aes(x = xval, y = ..y..), fun = dbeta, colour="orchid", n = length(z$myVar), args = list(shape1=shape1ML,shape2=shape2ML))
+pSpecial + statSpecial
+ 
+```
+
+## Questions 2 and 3
+### Distribution of Brix Sugar Content of Blueberries
+```{r}
+
+# my data is read here. "$" is used to extract one column.
+Berries <- read.table("BerryData.csv",header=TRUE,sep=",", stringsAsFactors=FALSE)
+z <- data.frame(Berries$brix)
+l <- Berries$brix
+str(z)
+summary(z)
+
+
+# plot histogram of data
+# y axis is rescaled so that the area under the curve equals one. 
+p1 <- ggplot(data=z, aes(x=l, y=..density..)) +
+  geom_histogram(color="grey60",fill="cornsilk",size=0.2) +  stat_bin(binwidth=1) #could add this but don't have to.
+print(p1)
+
+# add empirical density curve
+# this adds a curve that id fitted to the data to smooth the shape of the histogram. It does not assume any distribution. 
+p1 <-  p1 +  geom_density(linetype="dotted",size=0.75)
+print(p1)
+
+# get maximum likelihood parameters for normal
+normPars <- fitdistr(Berries$brix,"normal")
+print(normPars) # rpints mean and standard deviation
+str(normPars)
+normPars$estimate["mean"] # note structure of getting a named attribute
+
+# plot normal probability density
+# first, assign mean and sd to variables
+meanML <- normPars$estimate["mean"]
+sdML <- normPars$estimate["sd"]
+
+# x values are specified from 0 to the length of variable of interest.
+xval <- seq(0,max(l,na.rm=T),len=length(l))
+
+# dnorm() is called inside ggplot's "stat_function" to generate the probability density for the normal distribution. 
+stat <- stat_function(aes(x = xval, y = ..y..), fun = dnorm, colour="red", n = length(l), args = list(mean = meanML, sd = sdML))
+ p1 + stat
+# The red curve shows the best-fitting normal dist. Looks pretty good.
+ 
+ 
+# plot exponential probability density
+# fitdistr() is used to fit exponential curve to data 
+expoPars <- fitdistr(l,"exponential")
+rateML <- expoPars$estimate["rate"]
+
+stat2 <- stat_function(aes(x = xval, y = ..y..), fun = dexp, colour="blue", n = length(l), args = list(rate=rateML))
+ p1 + stat + stat2
+
+# plot uniform probability density
+# fitdistr() is not needed. Only two parameters are min and max of data. 
+ stat3 <- stat_function(aes(x = xval, y = ..y..), fun = dunif, colour="darkgreen", n = length(l), args = list(min=min(l), max=max(l)))
+ p1 + stat + stat2 + stat3
+
+# plot gamma probability density
+# fitdistr() is used again here. 
+ gammaPars <- fitdistr(l,"gamma")
+shapeML <- gammaPars$estimate["shape"]
+rateML <- gammaPars$estimate["rate"]
+
+stat4 <- stat_function(aes(x = xval, y = ..y..), fun = dgamma, colour="brown", n = length(l), args = list(shape=shapeML, rate=rateML))
+ p1 + stat + stat2 + stat3 + stat4
+# looks similar but better than normal dist.
+ 
+# plot beta probability density
+#it is plotted in its own plot because data must be rescaled to be between 1 and 0.
+ pSpecial <- ggplot(data=z, aes(x=l/(max(l + 0.1)), y=..density..)) +
+  geom_histogram(color="grey60",fill="cornsilk",size=0.2) + 
+  xlim(c(0,1)) +
+  geom_density(size=0.75,linetype="dotted")
+
+betaPars <- fitdistr(x=l/max(l + 0.1),start=list(shape1=1,shape2=2),"beta")
+shape1ML <- betaPars$estimate["shape1"]
+shape2ML <- betaPars$estimate["shape2"]
+
+statSpecial <- stat_function(aes(x = xval, y = ..y..), fun = dbeta, colour="orchid", n = length(l), args = list(shape1=shape1ML,shape2=shape2ML))
+pSpecial + statSpecial
+# fits very well, but not a closely as gamma. 
+
+```
+
+## Question 4
+This histogram of my data shows 4 probability density curves:
+normal - red
+uniform - green
+exponential - blue
+gamma - brown
+```{r}
+ p1 + stat + stat2 + stat3 + stat4
+```
+
+## Question 5
+The best fit distribution for the brix content of blueberries appears to be the gamma distribution. 
+the maximum likelihood parameters of this distribution are shape and rate.
+
+The histogram profiles of the generated distribution and the original data are very similar. They both span the same range of values, and are slightly right-skewed. The original data distribution has a higher peak (about0.2) than the generated dataset (0.15), however. 
+
+```{r}
+# plot gamma probability density
+# fitdistr() is used again here. 
+gammaPars <- fitdistr(l,"gamma")
+shapeML <- gammaPars$estimate["shape"]
+rateML <- gammaPars$estimate["rate"]
+
+stat4 <- stat_function(aes(x = xval, y = ..y..), fun = dgamma, colour="brown", n = length(l), args = list(shape=shapeML, rate=rateML))
+p1 + stat4
+
+# normpars() is used to find maximum likelihood parameters
+normPars <- fitdistr(Berries$brix,"gamma")
+print(normPars) # rpints shape and rate parameters
+str(normPars)
+
+# Make a new data set to simulate my berry data:
+# rgamma() makes a random gamma distribution
+# First argument is n (there were 1995 berries in my data)
+# second argumant is shape
+# third argument is rate
+h <- rgamma(1995,20.37658929,rate=1.73798888)
+g <- data.frame(1:1995,h)
+
+
+
+
+# plot histogram of new data set
+pnew_data <- ggplot(data=g, aes(x=h, y=..density..)) +
+  geom_histogram(color="grey60",fill="cornsilk",size=0.2) +  stat_bin(binwidth=1) 
+print(pnew_data)
+
+# generated data set histogram with empirical density curve 
+pnew_data <-  pnew_data +  geom_density(linetype="dotted",size=0.75)
+print(pnew_data)
+ 
+
+# histogram with empirical density curve of original data for comparison
+p1 <-  p1 +  geom_density(linetype="dotted",size=0.75)
+print(p1)
+ 
+```
