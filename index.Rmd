@@ -19,4 +19,6 @@ output:
 
 [Homework 5](Homework_5.html)
 
+[Homework_6](Homework_6.html)
+
 
