@@ -1,0 +1,187 @@
+---
+title: "Homework_7"
+author: "Gretchen Saveson"
+date: "2/26/2020"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+In Highbush Blueberry plants, I expect to find a correlation between nectar and pollen characteristics and the degree of mycorrhizal colonization in roots. These are both continuous variables. Mycorrhizal colonization ranges from 0.00 to 1.00, and nectar sugar content can range from 1 to 50 grams sucrose/100 grams solution. 
+
+
+## Question 2
+
+Asssuming a normal distribution for my variables, these are potential parameters:
+
+**mycorrhizal colonization:**  
+n = 200  
+mean = 0.6  
+variance = 0.1  
+
+**brix sugar content**  
+n = 200  
+mean = 40  
+variance = 25  
+
+
+## Question 3
+```{r}
+n <- 200 # number of observations (rows)
+
+# creates a normally distributed vector length 200 (independent variable)
+#sort() is used to sort the random normal vector into increasing order
+#sample() is then used to draw from the sorted vector, with higher numbers weighted with a higher probability of selection. 
+#the goal is to have a positive association between these vectors
+colonization <- sample(sort(rnorm(n,mean = 0.6,sd = 0.32)),prob=seq_len(200))
+brix <- sample(sort(rnorm(n,mean=40,sd=5)),prob=seq_len(200)) 
+
+
+id <- seq_len(n) # assigns numbers to each case of variables from 1 to n if n>0
+
+# bind varibles together
+frame <- data.frame(id,colonization,brix)
+head(frame)
+```
+
+## Question 4
+code to analyze these data as a linear regression analysis:
+```{r}
+library(ggplot2)
+
+# regression model
+regression <- lm(brix~colonization,data=frame) #lm() function models brix variable as a function of colonization. 
+
+#plot of data
+#ggplot requires data from a frame, not a vector
+#aes = aesthetics. theses are the variables that we want 
+# + sign indicates that we are adding to plot
+plot <- ggplot(data=frame,
+                   aes(x=colonization,y=brix)) +
+                    geom_point() + #shows data as x,y points in a plot
+                    stat_smooth(method=lm,se=0.95) #overlays a regression line and a 95% confidence interval
+print(plot)
+
+```
+
+## Question 5  
+When parameeters are held constant, the p-value and R^2^ value change slightly but are not very variable. P-values are very small and r^2^ values stay between 0.1 and 0.2.
+
+```{r eval=FALSE}
+# get p_value and R^2 from summary
+summary(regression) #gives intercept, p-value
+summary(regression)$coefficients # gives summary of coefficients
+
+#bundle up thigs of interest into a list
+z <- unlist(summary(regression)) #unpacks summary into a list
+print(z)
+# make your own list, pulling items that you want from z
+results <- list(p_value=z$coefficients8,
+                r2=z$r.squared)
+results
+```
+**rerun 1:**  
+P = 1.24 x 10^-7^  
+R^2^ = 0.132  
+
+**rerun 2:**  
+P = 2.44 x 10^-9^  
+R^2^ = 0.165  
+
+**rerun 3:**  
+P = 3.56 x 10^-9^  
+R^2^ = 0.162  
+
+**rerun 4:**  
+P = 1.98 x 10^-10^  
+R^2^ = 0.185  
+
+
+## Question 6
+```{r eval=FALSE}
+# A condensed version of all the code above that can be experimentally manipulated:
+n <- 200
+colonization <- sample(sort(rnorm(n,mean = 0.6,sd = 0.32)),prob=seq_len(n))
+brix <- sample(sort(rnorm(n,mean=40,sd=.001)),prob=seq_len(n)) 
+id <- seq_len(n)
+frame <- data.frame(id,colonization,brix)
+
+regression <- lm(brix~colonization,data=frame)
+summary(regression)
+z <- unlist(summary(regression))
+results <- list(p_value=z$coefficients8,
+                r2=z$r.squared)
+results
+```
+### investigating the effect of variance on R^2^:
+The effect size of a linear regression can't be changed. Instead, the standard deviation of the variables can be changed to investigate changes in R^2^.
+
+**Original results:**  
+P = 1.24 x 10^-7^  
+R^2^ = 0.132  
+
+#### Effect of colonization sd on P value and R^2^  
+**When colonization sd is increased to .9, P increases to indicate insignificance and R^2^ increases slightly:**  
+P = 0.042  
+R^2^ = 0.139  
+
+**When colonization sd is increased to .5, P does not change much and R^2^ increases slightly. When these parameters are rerun many times, the results are more variable than they were with the original sd value:**  
+P = 1.06 x 10^-9^  
+R^2^ = 0.172  
+
+**When colonization sd is decreased to .001, P does not change much and R^2^ increases slightly. When these parameters are rerun many times, the results are FAR LESS VARIABLE than they were with the original sd value:**  
+P = 1.98 x 10^-7^  
+R^2^ = 0.128  
+
+#### Effect of brix sd on P value and R^2^  
+**When brix sd is increased to 100, P and R^2^ do not change much. When these parameters are rerun many times, the results do not vary much. This may be in part due to the large sample size, which may allow for lots of variation while mainatianing significant results.**  
+P = 2.46 x 10^-8^  
+R^2^ = 0.146  
+
+**As above, when brix sd is increased to 100, P and R^2^ do not change much. When these parameters are rerun many times, the results do not vary much. This may be in part due to the large sample size, which may allow for lots of variation while mainatianing significant results.**  
+P = 1.23 x 10^-9^  
+R^2^ = 0.171  
+
+
+## Question 7
+```{r eval=FALSE}
+# A condensed version of all the code above that can be experimentally manipulated:
+n <- 30
+colonization <- sample(sort(rnorm(n,mean = 0.6,sd = 0.32)),prob=seq_len(n))
+brix <- sample(sort(rnorm(n,mean=40,sd=5)),prob=seq_len(n)) 
+id <- seq_len(n)
+frame <- data.frame(id,colonization,brix)
+
+regression <- lm(brix~colonization,data=frame)
+summary(regression)
+z <- unlist(summary(regression))
+results <- list(p_value=z$coefficients8,
+                r2=z$r.squared)
+results
+```
+
+
+### Effect of sample size on P and R^2^  
+**When sample size is decreased to 100, the P value increases and R^2^ decreases:**  
+P = .003  
+R^2^ = 0.088  
+
+**When sample size is decreased to 50, the P value increases:**  
+P = 0.002  
+R^2^ = 0.176  
+ 
+**When sample size is decreased to 30, the P value increases:**  
+P = 0.024  
+R^2^ = 0.168  
+
+**When sample size is decreased even further to 10, the P value increases to a non-significant value and R^2^ decreases:**  
+P = 0.707  
+R^2^ = 0.019  
+ 
+
+
