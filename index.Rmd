@@ -7,8 +7,8 @@ output:
     theme: Caymen
     highlight: github
 ---
-<img src="profile.jpg" width="400" height="400"/>
-<img src="pic.jpg" width="700" height="400"/>
+<img src="profile.jpg" width="200" height="200"/>
+<img src="pic.jpg" width="350" height="200"/>
 
 ## Homework Links 
 [Homework 1](Homework 1.html)
@@ -19,6 +19,8 @@ output:
 
 [Homework 5](Homework_5.html)
 
-[Homework_6](Homework_6.html)
+[Homework 6](Homework_6.html)
 
-[Homework_7](Homework_7.html)
+[Homework 7](Homework_7.html)
+
+[Homework 8](Homework_8.html)
