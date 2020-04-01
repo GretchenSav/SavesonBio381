@@ -1,0 +1,222 @@
+---
+title: "Homework_9"
+author: "Gretchen Saveson"
+date: "3/24/2020"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+```{r}
+
+
+# ----------------------------------------
+# FUNCTION create_data
+# description: create a data frame containing two normally distributed vectors that are positively associated with each other to represent colonization and brix variables
+# inputs: n = number of samples
+# outputs: data frame
+##########################################
+create_data <- function(n=200) {
+
+frame <- data.frame(ID = seq_len(n),
+                    colonization = sample(sort(rnorm(n,mean = 0.6,sd = 0.32)),prob=seq_len(n)),
+                    brix = sample(sort(rnorm(n,mean=40,sd=5)),prob=seq_len(n)))
+
+return(frame)
+
+} # end of create_data
+#-----------------------------------------
+head(create_data())
+
+
+# ----------------------------------------
+# FUNCTION linear_regression
+# description: analyze data using a linear model
+# inputs: x and y vectors of brix and colonization values
+# outputs: lm summary
+##########################################
+linear_regression <- function(xVar=sample(sort(rnorm(200,mean=0.6,sd=0.32)),prob=seq_len(200)),
+                              yVar=sample(sort(rnorm(200,mean=40,sd=5)),prob=seq_len(200))) {
+
+df <- data.frame(xVar,yVar)              
+regModel <- lm(yVar~xVar,data=df)
+return(summary(regModel))
+
+
+} # end of linear regression
+#-----------------------------------------
+linear_regression()
+# Is there a more stremlined way to carry data from the create_data function into the linear regression here?
+print(unlist(linear_regression()))
+
+
+
+# ----------------------------------------
+# FUNCTION SummarizeOutput
+# description: pull elements from model summary list
+# inputs: summary = list from summary call of lm
+# outputs: vector of regression residuals
+##########################################
+SummarizeOutput <- function(summary=NULL) {
+if(is.null(summary)) {
+
+summary <- unlist(summary(lm(sample(sort(rnorm(200,mean=40,sd=5)),prob=seq_len(200))~sample(sort(rnorm(200,mean=0.6,sd=0.32)),prob=seq_len(200)))))
+}
+  return(list(summary$r.squared,
+              summary$coefficients7))
+} # end of SummarizeOutput
+#-----------------------------------------
+SummarizeOutput()
+# used the unlist() function to separate out r2 and p-values to grab. there is probaby a better way to do this. 
+
+library(ggplot2)
+# ----------------------------------------
+# FUNCTION GraphResults
+# description: Graph data qith a fitted OLS line
+# inputs: x and y vectors of the same length
+# outputs: output_description
+##########################################
+GraphResults <- function(xVar=sample(sort(rnorm(200,mean=0.6,sd=0.32)),prob=seq_len(200)),
+                              yVar=sample(sort(rnorm(200,mean=40,sd=5)),prob=seq_len(200))) {
+
+df <- data.frame(xVar,yVar)
+p1 <- qplot(data=df,
+            x=xVar,
+            y=yVar,
+            geom=c("smooth","point"))
+print(p1)
+
+
+} # end of GraphResults
+#-----------------------------------------
+GraphResults()
+```
+### Daisy-chain the functions together:
+```{r}
+
+temp1 <- create_data()
+
+x <- temp1$colonization
+y <- temp1$brix
+
+temp2 <- linear_regression(xVar=x,yVar=y)
+
+temp3 <- SummarizeOutput(summary=temp2)
+
+GraphResults(xVar=x,yVar=y)
+
+```
+
+## Question 2
+This new function series will execute an ANOVA between two sets of variables created to represent Blackpole Warbler weight before and after migration. They typically wiegh 22 grams before leaving the U.S. and 11 once landing in South America. 
+
+```{r}
+# ----------------------------------------
+# FUNCTION create_data
+# description: create a data frame containing two normally distributed vectors to represent weights of birds before and after migration.
+# inputs: n = number of samples
+# outputs: data frame
+##########################################
+create_data <- function(n=200) {
+
+frame <- data.frame(ID = seq_len(n),
+                    pre_flight = rnorm(n,mean=20,sd=5),
+                    post_flight = rnorm(n,mean=12,sd=5))
+return(frame)
+
+} # end of create_data
+#-----------------------------------------
+head(create_data())
+
+
+# ----------------------------------------
+# FUNCTION calculate_ANOVA
+# description: analyze data using an ANOVA
+# inputs: x and y vectors of pre-flight and post-flight weights
+# outputs: ANOVA summary
+##########################################
+calculate_ANOVA <- function(xVar=rnorm(200,mean=20,sd=5),
+                            yVar=rnorm(200,mean=12,sd=5)) {
+
+df <- data.frame(xVar,yVar)              
+ANOVAModel <- aov(yVar~xVar,data=df)
+return(summary(ANOVAModel))
+
+
+} # end of linear regression
+#-----------------------------------------
+calculate_ANOVA()
+# Is there a more stremlined way to carry data from the create_data function into the linear regression here?
+#print(unlist(calculate_ANOVA()))
+
+
+
+# ----------------------------------------
+# FUNCTION SummarizeOutput
+# description: pull elements from model summary list
+# inputs: summary = list from summary call of lm
+# outputs: vector of regression residuals
+##########################################
+SummarizeOutput <- function(summary=NULL) {
+if(is.null(summary)) {
+
+summary <- summary(aov(rnorm(200,mean=20,sd=5)~rnorm(200,mean=12,sd=5)))
+}
+  return(list(Fval=unlist(summary)[7],
+              probF=unlist(summary)[9]))
+} # end of SummarizeOutput
+#-----------------------------------------
+SummarizeOutput()
+# used the unlist() function to separate out summary stats of interest. Is there a better way to do this?. 
+
+
+
+library(ggplot2)
+# ----------------------------------------
+# FUNCTION GraphResults
+# description: Graph data qith a fitted OLS line
+# inputs: x and y vectors of the same length
+# outputs: output_description
+##########################################
+GraphResults <- function(xVar=rnorm(200,mean=20,sd=5),
+                        yVar=rnorm(200,mean=12,sd=5)) {
+
+xVar=rnorm(200,mean=20,sd=5)
+yVar=rnorm(200,mean=12,sd=5)
+
+  
+df <- data.frame(xVar,yVar)
+
+p1 <- boxplot(xVar,yVar,
+        main="Weight of bird pre and post migration",
+        at=c(1,2),
+        nams= c("pre-flight","post-flight"),
+        xlab="pre-flight         post-flight",
+        ylab="wieght(grams)")
+
+
+print(p1)
+
+
+} # end of GraphResults
+#-----------------------------------------
+GraphResults()
+
+
+```
+### Link functions together:
+```{r}
+temp1 <- create_data()
+
+pre_flight <- temp1$pre_flight
+post_flight <- temp1$post_flight
+
+temp2 <- calculate_ANOVA(pre_flight,post_flight)
+temp3 <- SummarizeOutput(summary=temp2)
+GraphResults(xVar=pre_flight,yVar=post_flight)
+```

@@ -6,6 +6,8 @@ output:
   prettydoc::html_pretty:
     theme: Caymen
     highlight: github
+editor_options: 
+  chunk_output_type: console
 ---
 <img src="profile.jpg" width="200" height="200"/>
 <img src="pic.jpg" width="350" height="200"/>
@@ -24,3 +26,7 @@ output:
 [Homework 7](Homework_7.html)
 
 [Homework 8](Homework_8.html)
+
+[Homework 9](Homework_9.html)
+
+[Homework 10](Homework_10.html)
