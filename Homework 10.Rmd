@@ -43,7 +43,7 @@ zero_counter(c(2,0,6,7,0,8,0,2))
 # Count the zeros in a vector using subsetting instead of a for loop:
 # First, create a vector
 v <- round((runif(n=100,min=0,max=1)),digits=0)
-# Second, count the length of the subset vector containing only elements from the original vector that are equual to zero. 
+# Second, count the length of the subset vector containing only elements from the original vector that are equal to zero. 
 zero_count <- length(v[v==0])
 print(zero_count)
 
@@ -78,8 +78,181 @@ create_matrix()
 ```
 ## Question 4
 
+Perfom a randomization test on the linear regression between two variables. 
+
 ```{r}
 
+library(ggplot2)
+my_seed <- as.numeric(Sys.time())
+set.seed(my_seed)
+
+# ----------------------------------------
+# FUNCTION get_data
+# description: read in or generate a dataset
+# inputs: file name or NULL
+# outputs: data frame of observed data
+##########################################
+get_data <- function(z=NULL) {
+
+df <- read.table(file=z,
+                 header=TRUE,
+                 sep=",",
+                 stringsAsFactors=FALSE)
+
+
+return(df)
+
+} # end of get_data
+#-----------------------------------------
+
+
+# ----------------------------------------
+# FUNCTION get_slope
+# description: calculate slopw for randomization test
+# inputs: data frame containing 2 variables
+# outputs: regression slope
+##########################################
+get_slope <- function(z=NULL) {
+
+  . <- lm(z[,4]~z[,3]) # little seeds as a function of berry mass
+  . <- summary(.)
+  . <- .$coefficients[2,1] # second row, thirds column is location of the slope in the summary matirx
+  slope <- .
+
+return(slope)
+
+} # end of get_slope
+#-----------------------------------------
+
+
+# ----------------------------------------
+# FUNCTION shuffle_data
+# description: randomize data for regression analysis
+# inputs: data frame containing observed data for 2 regression variables
+# outputs: data frame containing 1000 columns of reshuffled data
+##########################################
+shuffle_data <- function(z=NULL) {
+
+z[,4] <- sample(z[,4])
+    
+ 
+return(z)
+
+} # end of shuffle_data
+#-----------------------------------------
+
+
+# ----------------------------------------
+# FUNCTION get_pval
+# description: calculate p value from simulation
+# inputs: list of observed metric and vector of simulated metrics
+# outputs: upper and lower tail probability values
+##########################################
+get_pval <- function(z=NULL) {
+
+p_lower <- mean(z[[2]]<=z[[1]])
+p_upper <- mean(z[[2]]>=z[[1]])
+
+return(c(pL=p_lower,pU=p_upper))
+
+} # end of get_pval
+#-----------------------------------------
+
+
+# ----------------------------------------
+# FUNCTION plot_ran_test
+# description: create a ggplot of histogram of simulated values
+# inputs: list of observed metric and vector simulated metrics (same as get_pval)
+# outputs: saved ggpolt graph
+##########################################
+plot_ran_test <- function(z=NULL) {
+
+df <- data.frame(ID=seq_along(z[[2]]),
+                 sim_x=z[[2]])
+
+p1 <- ggplot(data=df, mapping=aes(x=sim_x))
+p1 + geom_histogram(mapping=aes(fill=I("goldenrod"),
+                                color=I("black"))) +
+  geom_vline(aes(xintercept=z[[1]],col="blue")) # shows actual slope
+
+} # end of plot_ran_test
+#-----------------------------------------
+
+
+
+# RUNNING THE PROGRAM
+
+
+n_sim <- 1000 # number of simulated datasets
+x_sim <- rep(NA,n_sim) # empty vector length n_sim
+df <- get_data(z="BerryData.csv")
+x_obs <- get_slope(df) # get slope of observed data
+
+for (i in seq_len(n_sim)) {
+  x_sim[i] <- get_slope(shuffle_data(df))
+}
+
+slopes <- list(x_obs,x_sim)
+get_pval(slopes)
+plot_ran_test(slopes)
+  
 
 
 ```
+## Question 5
+
+```{r}
+
+df <- read.table("BerryData.csv",
+                 header=TRUE,
+                 sep=",",
+                 stringsAsFactors=FALSE)
+x_var <- df[,3]
+y_var <- df[,4]
+
+regression_data <- data.frame(x_var,y_var)
+
+regression_model <- glm(y_var~x_var,
+                        data=regression_data)
+
+summary(regression_model)
+# p value is 0.104, which is about the same as that predicted by the randomization test. 
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

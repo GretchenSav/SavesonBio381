@@ -1,0 +1,50 @@
+---
+title: "Homework 11"
+author: "Gretchen Saveson"
+date: "4/8/2020"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1...in progress
+
+```{r}
+
+
+df <- read.table(file="TotalFlowers.csv",
+                 header=TRUE,
+                 sep=",",
+                 stringsAsFactors=FALSE)
+
+
+
+A <- subset(df,df[,1]=="A")
+B <- subset(df,df[,1]=="B")
+C <- subset(df,df[,1]=="C")
+D <- subset(df,df[,1]=="D")
+E <- subset(df,df[,1]=="E")
+
+A <- A[,2]
+B <- B[,2]
+C <- C[,2]
+D <- D[,2]
+E <- E[,2]
+
+ANOVA <- aov(lm(C~A+B+D+E)
+             #how to deal with unequal sample sizes?
+
+
+
+
+
+
+trtA <- data.frame(df[1]=="A",df[2])
+
+
+
+```
