@@ -1,0 +1,33 @@
+---
+title: "Homework 12"
+author: "Gretchen Saveson"
+date: "4/15/2020"
+output: html_document
+---
+
+## Advanced ggplotting
+
+```{r}
+library(ggplot2)
+library(ggthemes)
+library(patchwork)
+library(TeachingDemos)
+char2seed("crocus")
+
+time <- read.csv("TotalTimeOnFlowers.csv")
+nflowers <- read.csv("TotalFlowers.csv")
+stems <- read.csv("NonBuddingStems.csv")
+berry <- read.csv("BerryData.csv")
+time <- complete.cases(time$TotalTimeOnFlowers)
+head(Time)
+
+# first, I will make a basic histogram -------------------------------
+qplot(x=time, fill = I("goldenrod"),color=I("black"))
+
+# add smoothing
+qplot(x=time
+
+
+
+
+```

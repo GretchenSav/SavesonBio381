@@ -1,0 +1,7 @@
+# Summarystats forbatchprocessing of regression models
+# timestamp: 2020-04-18 20:02:45
+"ID","file_name","trtA_pVal","trtE_pVal"
+1,"BerryData.csv",0.415056832652312,0.635884293855466
+2,"NonBuddingStems.csv",0.216069737513571,0.386836919297278
+3,"TotalFlowers.csv",0.533073894133276,8.68800038591026e-05
+4,"TotalTimeOnFlowers.csv",0.0419891522031217,0.773800874272075

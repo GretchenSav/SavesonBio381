@@ -11,40 +11,95 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Question 1...in progress
+## Question 1
 
 ```{r}
 
+# First, build a function that runs the test of interest. Here, I run an ANOVA between treatments C, A, and E. This function will be put in a for loop, and the data frame "df" will be created in the for loop just prior to using this function
 
-df <- read.table(file="TotalFlowers.csv",
-                 header=TRUE,
-                 sep=",",
-                 stringsAsFactors=FALSE)
+# ----------------------------------------
+# FUNCTION aov_stats
+# description: runs an ANOVA and extracts summary stats
+# inputs: data frame containing variables for A, C, and E treatments
+# outputs: p-values
+##########################################
+aov_stats <- function(df) {
+  . <-aov(df[,1]~df[,2]+df[,3])
+  . <- unlist(summary(.))
+  stats_list <- list(trtA_pVal=.["Pr(>F)1"],
+                     trtE_pVal=.["Pr(>F)2"])
+
+return(stats_list)
+
+} # end of aov_stats
+#-----------------------------------------
+
+# Next, an empty data frame is set up. The subsequent for loop will fill it row by row.        
+############################################
+file_names <- list.files("./BatchProcessingFiles")
+ID <- seq_along(file_names)
+file_name <- file_names
+trtA_pVal <- rep(NA,length(file_names))
+trtE_pVal <- rep(NA,length(file_names))
+
+stats_out <- data.frame(ID,file_name,trtA_pVal,trtE_pVal)
 
 
-
-A <- subset(df,df[,1]=="A")
-B <- subset(df,df[,1]=="B")
-C <- subset(df,df[,1]=="C")
-D <- subset(df,df[,1]=="D")
-E <- subset(df,df[,1]=="E")
-
-A <- A[,2]
-B <- B[,2]
-C <- C[,2]
-D <- D[,2]
-E <- E[,2]
-
-ANOVA <- aov(lm(C~A+B+D+E)
-             #how to deal with unequal sample sizes?
+library(ggplot2)
 
 
+# For loop
+# A for loop is used to run an ANOVA on each file in the BatchProcessingFiles directory, and summary stats are pulled out
+######################################
+for (i in seq_along(file_names)) {
+ 
+   df <- read.table(file=paste("./BatchProcessingFiles/",file_names[i],
+                     sep=""),
+                     sep=",",
+                     header=TRUE)
+
+a <- subset(df,df[,1]=="A")
+c <- subset(df,df[,1]=="C")
+e <- subset(df,df[,1]=="E")
+
+A <- sample(a[,2], size=32)
+C <- sample(c[,2], size=32)
+E <- sample(e[,2], size=32)
+# I could not run an ANOVA on vectors of different lengths, so I took samples of 32 from each treatment so that an ANOVA could be run. Not sure how I would deal with this problem if I actually needed the data, though.
+
+df <- data.frame(C,A,E)
+
+  . <- aov_stats(df)
+  stats_out[i,3:4] <- unlist(.)
+}
+#######################################
+
+# Next, a file is created to hold the outputs from the for loop in an organized way, labeled with time stamps. 
 
 
+file_out <- "StatsSummary.csv"
+# This file_out could be changed to "StatsSummary1.csv" if loop is run again after editing the files in the BatchProcessingFiles directory
+
+write.table(cat("# Summarystats for",
+                "batchprocessing of regression models",
+                "\n",
+                "# timestamp: ",as.character(Sys.time()),
+                "\n",
+                file=file_out,
+                row.names="",
+                col.names="",
+                sep=''))
 
 
-trtA <- data.frame(df[1]=="A",df[2])
-
-
+# now add the data frame
+write.table(x=stats_out,
+            file=file_out,
+            row.names=FALSE,
+            col.names=TRUE,
+            sep=",",
+            append=TRUE)
 
 ```
+
+The resulting output file:
+[StatsSummary](StatsSummary.csv)
