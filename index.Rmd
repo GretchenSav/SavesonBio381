@@ -32,3 +32,7 @@ editor_options:
 [Homework 10](Homework-10.html)
 
 [Homework 11](Homework-11.html)
+
+[Homework 11 improved](Homework11(2).html)
+
+[Homework 12](Homework_12.html)

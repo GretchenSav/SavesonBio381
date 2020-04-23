@@ -3,6 +3,8 @@ title: "Homework 12"
 author: "Gretchen Saveson"
 date: "4/15/2020"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ## Advanced ggplotting
@@ -12,20 +14,43 @@ library(ggplot2)
 library(ggthemes)
 library(patchwork)
 library(TeachingDemos)
-char2seed("crocus")
+char2seed("headwaters")
 
-time <- read.csv("TotalTimeOnFlowers.csv")
-nflowers <- read.csv("TotalFlowers.csv")
-stems <- read.csv("NonBuddingStems.csv")
-berry <- read.csv("BerryData.csv")
+time <- read.csv("./BatchProcessingfiles/TotalTimeOnFlowers.csv")
+nflowers <- read.csv("./BatchProcessingfiles/TotalFlowers.csv")
+stems <- read.csv("./BatchProcessingfiles/NonBuddingStems.csv")
+berry <- read.csv("./BatchProcessingfiles/BerryData.csv")
 time <- complete.cases(time$TotalTimeOnFlowers)
 head(Time)
 
-# first, I will make a basic histogram -------------------------------
-qplot(x=time, fill = I("goldenrod"),color=I("black"))
+#####################################################
+seed <- read.csv(file="BerryProcessingData.csv",na.strings="")
+View(seed)
 
-# add smoothing
-qplot(x=time
+# scatterplot using qplot()
+# not publishable but gives a quick look at data.
+qplot(x=mass,
+      y=brix,
+      data=seed,
+      geom=c("smooth","point"),method="lm")
+
+seed <- seed[1:486,]
+View(seed)
+
+# ggplot boxplot
+p1 <- ggplot(seed,aes(x=farm,
+                      y=total.berries)) + geom_boxplot()
+print (p1)
+
+p1 + theme_bw()
+
+
+
+# boxplot
+ggplot(seed, aes(x=treatment,
+                 y=total.berries,
+                 fill=treatment)) +
+  geom_boxplot()
 
 
 

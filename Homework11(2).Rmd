@@ -1,19 +1,17 @@
 ---
-title: "Homework 11"
+title: "Homework 11- second try"
 author: "Gretchen Saveson"
-date: "4/8/2020"
+date: "4/22/2020"
 output: html_document
 editor_options: 
   chunk_output_type: console
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 ## Question 1
 
+In my last attempt of homework 11, I subsetted the original data files into data frames by treatment. This made it so that I couldn't perform an ANOVA unless each treatment had the same number of samples. This time, I run an ANOVA on each sample from the original data frame by not making a data frame.
+
 ```{r}
+library("tidyverse")
 
 # First, build a function that runs the test of interest. Here, I run an ANOVA between treatments C, A, and E. This function will be put in a for loop, and the data frame "df" will be created in the for loop just prior to using this function
 
@@ -24,15 +22,17 @@ knitr::opts_chunk$set(echo = TRUE)
 # outputs: p-values
 ##########################################
 aov_stats <- function(df) {
-  . <-aov(df[,1]~df[,2]+df[,3])
-  . <- unlist(summary(.))
-  stats_list <- list(trtA_pVal=.["Pr(>F)1"],
-                     trtE_pVal=.["Pr(>F)2"])
+  . <-aov(df[,2]~df[,1],data=df)
+  . <- TukeyHSD(.)
+  stats_list <- list(trtA_pVal=.[[1]]['C-A',4],
+                     trtE_pVal=.[[1]]['E-C',4])
 
 return(stats_list)
 
 } # end of aov_stats
 #-----------------------------------------
+# note that the data from the tukey hsd test is extracted by taking the summary [[1]], and then extracting the p-value from the matrix. the row name is the name of the treatments 'C-A' and 'E-C', the fourth column is the p value.
+
 
 # Next, an empty data frame is set up. The subsequent for loop will fill it row by row.        
 ############################################
@@ -53,22 +53,11 @@ library(ggplot2)
 ######################################
 for (i in seq_along(file_names)) {
  
-   df <- read.table(file=paste("./BatchProcessingFiles/",file_names[i],
+   df <- read.csv(file=paste("./BatchProcessingFiles/",file_names[i],
                      sep=""),
                      sep=",",
-                     header=TRUE)
-
-a <- subset(df,df[,1]=="A")
-c <- subset(df,df[,1]=="C")
-e <- subset(df,df[,1]=="E")
-
-A <- sample(a[,2], size=32)
-C <- sample(c[,2], size=32)
-E <- sample(e[,2], size=32)
-# I could not run an ANOVA on vectors of different lengths, so I took samples of 32 from each treatment so that an ANOVA could be run. Not sure how I would deal with this problem if I actually needed the data, though.
-
-df <- data.frame(C,A,E)
-
+                     header=TRUE,
+                  na.strings="")
   . <- aov_stats(df)
   stats_out[i,3:4] <- unlist(.)
 }
@@ -77,7 +66,7 @@ df <- data.frame(C,A,E)
 # Next, a file is created to hold the outputs from the for loop in an organized way, labeled with time stamps. 
 
 
-file_out <- "StatsSummary.csv"
+file_out <- "StatsSummary2.csv"
 # This file_out could be changed to "StatsSummary1.csv" if loop is run again after editing the files in the BatchProcessingFiles directory
 
 write.table(cat("# Summarystats for",
@@ -102,4 +91,16 @@ write.table(x=stats_out,
 ```
 
 The resulting output file:
-[StatsSummary](StatsSummary2.csv)
+[StatsSummary](StatsSummary.csv)
+
+
+
+
+
+
+
+
+
+```
+
+ 
