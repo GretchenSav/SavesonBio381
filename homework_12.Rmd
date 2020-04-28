@@ -10,47 +10,96 @@ editor_options:
 ## Advanced ggplotting
 
 ```{r}
+
 library(ggplot2)
 library(ggthemes)
 library(patchwork)
 library(TeachingDemos)
 char2seed("headwaters")
 
-time <- read.csv("./BatchProcessingfiles/TotalTimeOnFlowers.csv")
-nflowers <- read.csv("./BatchProcessingfiles/TotalFlowers.csv")
-stems <- read.csv("./BatchProcessingfiles/NonBuddingStems.csv")
-berry <- read.csv("./BatchProcessingfiles/BerryData.csv")
-time <- complete.cases(time$TotalTimeOnFlowers)
-head(Time)
+
 
 #####################################################
-seed <- read.csv(file="BerryProcessingData.csv",na.strings="")
-View(seed)
+seed1 <- read.csv(file="BerryProcessingData.csv",na.strings="")
+#View(seed1)
+
+seed2 <- seed1[1:486,] # take out rows with NA for trt code
+#View(seed2)
 
 # scatterplot using qplot()
 # not publishable but gives a quick look at data.
 qplot(x=mass,
       y=brix,
-      data=seed,
+      data=seed2,
       geom=c("smooth","point"),method="lm")
 
-seed <- seed[1:486,]
-View(seed)
+
 
 # ggplot boxplot
-p1 <- ggplot(seed,aes(x=farm,
+p1 <- ggplot(seed2,aes(x=farm,
                       y=total.berries)) + geom_boxplot()
 print (p1)
 
-p1 + theme_bw()
+p1 + theme_bw(base_family="serif",base_size=9)
 
 
 
 # boxplot
-ggplot(seed, aes(x=treatment,
+
+seed3 <- seed1[c(1:433,487:1118,1121:1242),]
+#View(seed3)
+ggplot(seed3, aes(x=treatment,
                  y=total.berries,
                  fill=treatment)) +
   geom_boxplot()
+
+
+# Standard plot
+p2 <- ggplot(seed3,aes(x=total.berries,y=mass,color=treatment)) +
+  geom_point(size=1) +
+  geom_smooth(method=lm) +
+  theme_clean() +
+  labs(title="Number of Blueberries vs. Mass",
+       subtitle="Across Six Vermont Blueberry Farms",
+       x="Number of Berries",
+       y="mass")
+print(p2)
+
+#The above plot with brix mapped as a color gradient
+
+
+
+p2 <- ggplot(seed3,aes(x=total.berries,y=mass)) +
+  geom_point(size=1,mapping=aes(color=brix)) +
+  labs(title="Number of Blueberries vs. Mass",
+       subtitle="Across Six Vermont Blueberry Farms",
+       x="Number of Berries",
+       y="mass") 
+print(p2)
+
+
+# Faceting
+f1 <- ggplot(seed3,(aes(x=total.berries,y=mass))) + 
+  geom_smooth(method="lm")
+
+
+f1 + facet_grid(farm~treatment)
+f1 + geom_point(size=1,mapping=aes(color=brix)) + facet_grid(.~treatment) +
+ # scale_color_viridis_c() +
+  scale_color_gradient(low="aliceblue",
+                       high="royalblue3")
+  
+
+
+# bar plot with multiple bars
+#w <- wes_palettes
+
+b1 <- ggplot(seed3,aes(x=mass,fill=treatment)) +
+  geom_histogram(position="dodge",binwidth=1,color="black") +
+  scale_fill_manual(values=c("darkslategray3","pink2","lightsalmon2","khaki3","gold2"))#w$Moonrise3)
+print(b1)
+
+b1 <- ggplot(seed3,aes(x=treatment,fill=mass))
 
 
 
